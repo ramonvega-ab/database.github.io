@@ -224,7 +224,8 @@ form.addEventListener('submit', async (e) => {
         activityStatus: document.getElementById('activityStatus').value,
         activityDetail: document.getElementById('activityDetail').value,
         activityDetail2: document.getElementById('activityDetail2').value,
-        position: document.getElementById('position').value,
+        cargo: document.getElementById('cargo').value,
+        especialidad: document.getElementById('especialidad').value,
         phones: phones,
         emails: emails,
         photoUrl: currentBase64Photo,
@@ -321,19 +322,19 @@ const renderGrid = (filterText = '') => {
         let displayId = isRestricted ? '<span class="censored">xxx-xxx</span>' : record.idNumber;
         let displayDetail = isRestricted ? '<span class="censored">xxxxxxxx</span>' : detailString;
 
+        let displayRole = [];
+        if (record.cargo) displayRole.push(record.cargo);
+        if (record.especialidad) displayRole.push(record.especialidad);
+        const displayRoleText = displayRole.join(' | ') || 'N/A';
+
         const card = document.createElement('div');
-        card.className = 'person-card';
+        card.className = 'data-card';
+        card.onclick = () => openModal(record.uid);
         card.innerHTML = `
-            <div class="card-header" onclick="openModal('${record.uid}')">
-                <img src="${isRestricted ? defaultImage : record.photoUrl}" class="card-photo" alt="Foto">
-                <div class="card-title">
+            <div class="card-header">
+                ${record.photoUrl ? `<img src="${isRestricted ? defaultImage : record.photoUrl}" alt="Foto" class="card-avatar">` : `<div class="card-avatar"><i class='bx bx-user'></i></div>`}
+                <div class="card-info">
                     <h3>${record.fullName}</h3>
-                    <p>ID: ${displayId}</p>
-                </div>
-            </div>
-            <div class="card-body" onclick="openModal('${record.uid}')">
-                <div class="card-detail">
-                    <i class="bx bx-briefcase"></i>
                     <span>${record.position}</span>
                 </div>
                 <div class="card-detail">
@@ -389,12 +390,16 @@ window.openModal = (uid) => {
     let displayPhones = isRestricted ? '<p><span class="censored">xxxxxx</span></p>' : (r.phones && r.phones.length > 0 ? r.phones.map(p => `<p>${p}</p>`).join('') : '<p>No especificado</p>');
     let displayEmails = isRestricted ? '<p><span class="censored">xxxxxx</span></p>' : (r.emails && r.emails.length > 0 ? r.emails.map(e => `<p>${e}</p>`).join('') : '<p>No especificado</p>');
 
+    let displayCargo = isRestricted ? '<span class="censored">xxxxxx</span>' : (r.cargo ? r.cargo : '');
+    let displayEspecialidad = isRestricted ? '<span class="censored">xxxxxx</span>' : (r.especialidad ? r.especialidad : '');
+    let combinedRole = [displayCargo, displayEspecialidad].filter(Boolean).join(' | ') || 'No especificado';
+
     modalBody.innerHTML = `
         <div class="modal-profile">
             <img src="${isRestricted ? defaultImage : r.photoUrl}" alt="Foto">
             <div class="modal-profile-info">
                 <h2>${r.fullName}</h2>
-                <p style="color: #64748b; font-size: 14px; text-transform: capitalize;">${r.position} - ${r.activityStatus}</p>
+                <p style="color: #64748b; font-size: 14px; text-transform: capitalize;">${combinedRole} - ${r.activityStatus}</p>
                 <div class="badge" style="background: #e2e8f0; color: #334155; margin-right: 8px;">ID: ${displayId}</div>
                 <div class="badge">Añadido: ${r.dateAdded}</div>
             </div>
@@ -470,6 +475,13 @@ window.toggleActivityInput = () => {
     const group2 = document.getElementById('activityDetailGroup2');
     const input2 = document.getElementById('activityDetail2');
 
+    // New Role inputs
+    const roleRow = document.getElementById('roleRow');
+    const cargoGroup = document.getElementById('cargoGroup');
+    const especialidadGroup = document.getElementById('especialidadGroup');
+    const inputCargo = document.getElementById('cargo');
+    const inputEspecialidad = document.getElementById('especialidad');
+
     if (status === 'estudia') {
         group.style.display = 'flex';
         group2.style.display = 'none';
@@ -478,6 +490,14 @@ window.toggleActivityInput = () => {
         input.required = true;
         input2.required = false;
         input2.value = '';
+
+        roleRow.style.display = 'flex';
+        cargoGroup.style.display = 'none';
+        especialidadGroup.style.display = 'flex';
+        inputCargo.required = false;
+        inputCargo.value = '';
+        inputEspecialidad.required = true;
+
     } else if (status === 'trabaja') {
         group.style.display = 'flex';
         group2.style.display = 'none';
@@ -486,6 +506,14 @@ window.toggleActivityInput = () => {
         input.required = true;
         input2.required = false;
         input2.value = '';
+
+        roleRow.style.display = 'flex';
+        cargoGroup.style.display = 'flex';
+        especialidadGroup.style.display = 'none';
+        inputCargo.required = true;
+        inputEspecialidad.required = false;
+        inputEspecialidad.value = '';
+
     } else if (status === 'ambos') {
         group.style.display = 'flex';
         group2.style.display = 'flex';
@@ -496,6 +524,13 @@ window.toggleActivityInput = () => {
 
         input2.placeholder = 'Ej: Empresa de Prácticas...';
         input2.required = true;
+
+        roleRow.style.display = 'flex';
+        cargoGroup.style.display = 'flex';
+        especialidadGroup.style.display = 'flex';
+        inputCargo.required = true;
+        inputEspecialidad.required = true;
+
     } else {
         group.style.display = 'none';
         group2.style.display = 'none';
@@ -503,6 +538,14 @@ window.toggleActivityInput = () => {
         input2.value = '';
         input.required = false;
         input2.required = false;
+
+        roleRow.style.display = 'none';
+        cargoGroup.style.display = 'none';
+        especialidadGroup.style.display = 'none';
+        inputCargo.required = false;
+        inputCargo.value = '';
+        inputEspecialidad.required = false;
+        inputEspecialidad.value = '';
     }
 };
 
