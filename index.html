@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base de Datos de Personal | Vegas Group</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- BoxIcons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span style="color: #a855f7; font-size: 28px; font-weight: 800; font-family: monospace;">V</span>
+                    <span style="color: #334155; font-size: 18px; letter-spacing: 1px;">VEGAS GROUP</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" id="nav-dashboard">
+                    <i class='bx bx-grid-alt'></i>
+                    <span>Directorio</span>
+                </a>
+                <a href="#" class="nav-item" id="nav-add">
+                    <i class='bx bx-user-plus'></i>
+                    <span>Nuevo Registro</span>
+                </a>
+                <a href="#" class="nav-item" id="nav-access" style="display: none;">
+                    <i class='bx bx-shield-quarter'></i>
+                    <span>Gestión de Accesos</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="sidebarAvatar">AD</div>
+                    <div class="user-details">
+                        <span class="user-name" id="sidebarName">Vegas Admin</span>
+                        <span class="user-role" id="sidebarRole">Nivel 5</span>
+                    </div>
+                </div>
+                <button id="btnLogout" class="btn-delete"
+                    style="width: 100%; margin-top: 16px; font-size: 14px; text-align: left; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                    <i class='bx bx-log-out'></i> Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Login View -->
+            <div id="view-login" class="view active"
+                style="display: flex; align-items: center; justify-content: center; background: var(--bg-app); z-index: 100;">
+                <div class="login-container">
+                    <div style="text-align: center; margin-bottom: 32px;">
+                        <span
+                            style="color: #a855f7; font-size: 48px; font-weight: 800; font-family: monospace;">V</span>
+                        <h2 style="font-size: 24px; color: var(--text-main); margin-top: 8px;">VEGAS GROUP</h2>
+                        <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Portal de Acceso
+                            Restringido</p>
+                    </div>
+                    <form id="loginForm">
+                        <div class="input-group">
+                            <label>Correo Electrónico</label>
+                            <input type="email" id="loginEmail" required placeholder="tu@correo.com">
+                        </div>
+                        <div class="input-group">
+                            <label>Contraseña</label>
+                            <input type="password" id="loginPassword" required placeholder="••••••••">
+                        </div>
+                        <p id="loginError"
+                            style="color: var(--danger); font-size: 13px; text-align: center; margin-bottom: 16px; display: none;">
+                            Credenciales incorrectas.</p>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Iniciar Sesión</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="view">
+                <header class="content-header">
+                    <div class="header-left">
+                        <h1>Directorio de Personal</h1>
+                        <p>Gestión y búsqueda rápida de identificaciones.</p>
+                    </div>
+                    <div class="header-right">
+                        <div class="search-box">
+                            <i class='bx bx-search'></i>
+                            <input type="text" id="searchInput" placeholder="Buscar por nombre, ID o departamento...">
+                        </div>
+                    </div>
+                </header>
+
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class='bx bx-group'></i></div>
+                        <div class="stat-info">
+                            <h3>Total Registros</h3>
+                            <p id="totalCount">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-grid" id="dataGrid">
+                    <!-- Cards will be generated here by JS -->
+                </div>
+            </div>
+
+            <!-- Add New Record View -->
+            <div id="view-add" class="view">
+                <header class="content-header">
+                    <div class="header-left">
+                        <h1>Nuevo Registro</h1>
+                        <p>Ingresa los datos personales y la fotografía oficial.</p>
+                    </div>
+                </header>
+
+                <div class="form-container">
+                    <form id="recordForm" class="record-form">
+
+                        <!-- Photo Section -->
+                        <div class="form-section photo-section">
+                            <div class="photo-upload">
+                                <img id="photoPreview"
+                                    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4gPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNmZmYiIC8+IDxwYXRoIGQ9Ik01MCwyNEExMCwxMCAwIDEsMCA1MCw0NEExMCwxMCAwIDEsMCA1MCwyNE01MCw1MUMzOCw1MSAxNyw2MyAxNyw3NlY4M0g4M1Y3NkM4Myw2MyA2Miw1MSA1MCw1MVoiIGZpbGw9IiNjY2MiIC8+PC9zdmc+"
+                                    alt="Previsualización">
+                                <label for="photoInput" class="upload-btn">
+                                    <i class='bx bx-camera'></i> Seleccionar Foto
+                                    <input type="file" id="photoInput" accept="image/jpeg, image/png, image/webp"
+                                        style="display: none;">
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Data Section -->
+                        <div class="form-section data-section">
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="idNumber">ID</label>
+                                    <input type="text" id="idNumber" required>
+                                </div>
+                                <div class="input-group">
+                                    <label for="fullName">Nombre Completo</label>
+                                    <input type="text" id="fullName" required>
+                                </div>
+                            </div>
+
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="activityStatus">Actividad (Estudia / Trabaja)</label>
+                                    <select id="activityStatus" required onchange="toggleActivityInput()">
+                                        <option value="">Seleccione...</option>
+                                        <option value="estudia">Estudia</option>
+                                        <option value="trabaja">Trabaja</option>
+                                        <option value="ambos">Ambos (Estudia y Trabaja)</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <div class="input-group" id="activityDetailGroup"
+                                        style="display: none; margin-bottom: 12px;">
+                                        <label id="activityDetailLabel" for="activityDetail">Institución /
+                                            Empresa</label>
+                                        <input type="text" id="activityDetail">
+                                    </div>
+                                    <div class="input-group" id="activityDetailGroup2"
+                                        style="display: none; margin-bottom: 0;">
+                                        <label id="activityDetailLabel2" for="activityDetail2">Nombre de Empresa</label>
+                                        <input type="text" id="activityDetail2">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="position">Cargo / Especialidad</label>
+                                    <input type="text" id="position" required>
+                                </div>
+                            </div>
+
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label>Teléfonos de Contacto</label>
+                                    <div id="phoneInputsContainer">
+                                        <div class="dynamic-input">
+                                            <input type="tel" name="phone[]" required>
+                                            <button type="button" class="btn-icon add-input"
+                                                onclick="addDynamicField('phoneInputsContainer', 'tel', 'phone[]')"><i
+                                                    class='bx bx-plus'></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label>Correos Electrónicos</label>
+                                    <div id="emailInputsContainer">
+                                        <div class="dynamic-input">
+                                            <input type="email" name="email[]" required>
+                                            <button type="button" class="btn-icon add-input"
+                                                onclick="addDynamicField('emailInputsContainer', 'email', 'email[]')"><i
+                                                    class='bx bx-plus'></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" id="btnCancel">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Guardar Registro</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Access Management View -->
+            <div id="view-access" class="view">
+                <header class="content-header">
+                    <div class="header-left">
+                        <h1>Gestión de Accesos</h1>
+                        <p>Administra quién puede visualizar o editar la base de datos.</p>
+                    </div>
+                </header>
+
+                <div style="display: flex; gap: 32px; align-items: flex-start;">
+                    <!-- New User Form -->
+                    <div class="form-container" style="flex: 1; max-width: 350px;">
+                        <h3 style="margin-bottom: 16px; font-size: 16px;">Nuevo Usuario</h3>
+                        <form id="addUserForm">
+                            <div class="input-group">
+                                <label>Nombre</label>
+                                <input type="text" id="newUserName" required placeholder="Ej: Juan Pérez">
+                            </div>
+                            <div class="input-group">
+                                <label>Correo Electrónico</label>
+                                <input type="email" id="newUserEmail" required placeholder="Ej: juan@vegasgroup.com">
+                            </div>
+                            <div class="input-group">
+                                <label>Contraseña Tempral</label>
+                                <input type="text" id="newUserPass" required placeholder="Ej: Pass1234">
+                            </div>
+                            <div class="input-group">
+                                <label>Nivel de Permiso</label>
+                                <select id="newUserRole" required>
+                                    <option value="viewer">Lector (Solo ver todo)</option>
+                                    <option value="restricted">Lector Restringido (Censurado)</option>
+                                    <option value="admin">Administrador (Control total)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Crear Acceso</button>
+                        </form>
+                    </div>
+
+                    <!-- Users List -->
+                    <div
+                        style="flex: 2; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm);">
+                        <h3 style="margin-bottom: 16px; font-size: 16px;">Usuarios Activos</h3>
+                        <div id="usersGrid" style="display: flex; flex-direction: column; gap: 12px;">
+                            <!-- Users injected via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detail Modal -->
+            <div id="detailModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <div id="modalBody">
+                        <!-- Details injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Registro guardado exitosamente.</div>
+
+    <!-- Firebase Compat SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
