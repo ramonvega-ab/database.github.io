@@ -14,6 +14,7 @@ const db = firebase.firestore();
 
 let currentUser = null;
 let recordsData = [];
+let editingRecordId = null;
 
 // --- UI Logic & Navigation ---
 const navDashboard = document.getElementById('nav-dashboard');
@@ -217,8 +218,11 @@ form.addEventListener('submit', async (e) => {
     const phones = Array.from(document.querySelectorAll('input[name="phone[]"]')).map(input => input.value).filter(val => val.trim() !== '');
     const emails = Array.from(document.querySelectorAll('input[name="email[]"]')).map(input => input.value).filter(val => val.trim() !== '');
 
+    const isEdit = editingRecordId !== null;
+    const originalRecord = isEdit ? recordsData.find(r => r.uid === editingRecordId) : null;
+
     const newRecord = {
-        uid: generateId(),
+        uid: isEdit ? editingRecordId : generateId(),
         idNumber: document.getElementById('idNumber').value,
         fullName: document.getElementById('fullName').value,
         activityStatus: document.getElementById('activityStatus').value,
@@ -229,38 +233,22 @@ form.addEventListener('submit', async (e) => {
         phones: phones,
         emails: emails,
         photoUrl: currentBase64Photo,
-        dateAdded: new Date().toLocaleDateString()
+        dateAdded: isEdit && originalRecord ? originalRecord.dateAdded : new Date().toLocaleDateString()
     };
 
     try {
         await db.collection("records").doc(newRecord.uid).set(newRecord);
-        showToast('Registro guardado exitosamente');
+        showToast(isEdit ? 'Registro actualizado exitosamente' : 'Registro guardado exitosamente');
     } catch (err) {
         console.error("Error guardando:", err);
         showToast('Error al guardar registro', '#ef4444');
     }
 
-    // Reset dynamic inputs to just one field each
-    document.getElementById('phoneInputsContainer').innerHTML = `
-        <div class="dynamic-input">
-            <input type="tel" name="phone[]" required>
-            <button type="button" class="btn-icon add-input" onclick="addDynamicField('phoneInputsContainer', 'tel', 'phone[]')"><i class='bx bx-plus'></i></button>
-        </div>`;
-    document.getElementById('emailInputsContainer').innerHTML = `
-        <div class="dynamic-input">
-            <input type="email" name="email[]" required>
-            <button type="button" class="btn-icon add-input" onclick="addDynamicField('emailInputsContainer', 'email', 'email[]')"><i class='bx bx-plus'></i></button>
-        </div>`;
-
-    form.reset();
-    currentBase64Photo = defaultImage;
-    photoPreview.src = defaultImage;
-
+    resetFormCleanly();
     switchView('view-dashboard');
 });
 
-document.getElementById('btnCancel').addEventListener('click', () => {
-    // Reset dynamic inputs to just one field each
+const resetFormCleanly = () => {
     document.getElementById('phoneInputsContainer').innerHTML = `
         <div class="dynamic-input">
             <input type="tel" name="phone[]" required>
@@ -275,6 +263,19 @@ document.getElementById('btnCancel').addEventListener('click', () => {
     form.reset();
     currentBase64Photo = defaultImage;
     photoPreview.src = defaultImage;
+    editingRecordId = null;
+
+    const idInput = document.getElementById('idNumber');
+    idInput.readOnly = false;
+    idInput.style.backgroundColor = '';
+    idInput.style.color = '';
+
+    document.querySelector('#view-add h1').textContent = 'Nuevo Registro';
+    toggleActivityInput(); // reset visual state
+};
+
+document.getElementById('btnCancel').addEventListener('click', () => {
+    resetFormCleanly();
     switchView('view-dashboard');
 });
 
@@ -296,7 +297,7 @@ const renderGrid = (filterText = '') => {
 
     if (filtered.length === 0) {
         dataGrid.innerHTML = `
-            <div style="grid-column: 1/-1; text-align:center; padding: 60px 40px; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg);">
+                <div style="grid-column: 1/-1; text-align:center; padding: 60px 40px; background: var(--bg-surface); border: 1px dashed var(--border); border-radius: var(--radius-lg);">
                 <i class='bx bx-search-alt' style="font-size: 64px; color: #cbd5e1; margin-bottom: 16px;"></i>
                 <h3 style="font-size: 18px; margin-bottom: 8px;">No se encontraron resultados</h3>
                 <p style="color: #64748b;">No hay registros coincidentes con "${filterText}".<br>Intenta buscar de nuevo con otros términos o añade un nuevo registro.</p>
@@ -316,7 +317,7 @@ const renderGrid = (filterText = '') => {
         let isRestricted = currentUser && currentUser.role === 'restricted';
 
         let actDesc = record.activityStatus === 'estudia' ? 'Estudia en' : record.activityStatus === 'ambos' ? 'Estudia y Trabaja' : 'Trabaja en';
-        let detailString = `${record.activityDetail || 'N/A'}${record.activityDetail2 ? ' & ' + record.activityDetail2 : ''}`;
+        let detailString = `${record.activityDetail || 'N/A'}${record.activityDetail2 ? ' & ' + record.activityDetail2 : ''} `;
 
         // Role-based Censor Mapping
         let displayId = isRestricted ? '<span class="censored">xxx-xxx</span>' : record.idNumber;
@@ -331,26 +332,26 @@ const renderGrid = (filterText = '') => {
         card.className = 'data-card';
         card.onclick = () => openModal(record.uid);
         card.innerHTML = `
-            <div class="card-header">
-                ${record.photoUrl ? `<img src="${isRestricted ? defaultImage : record.photoUrl}" alt="Foto" class="card-avatar">` : `<div class="card-avatar"><i class='bx bx-user'></i></div>`}
+        <div class="card-header">
+            ${record.photoUrl ? `<img src="${isRestricted ? defaultImage : record.photoUrl}" alt="Foto" class="card-avatar">` : `<div class="card-avatar"><i class='bx bx-user'></i></div>`}
                 <div class="card-info">
                     <h3>${record.fullName}</h3>
-                    <span>${record.position}</span>
+                    <span>${displayRoleText}</span>
                 </div>
                 <div class="card-detail">
                     <i class="bx ${record.activityStatus === 'estudia' ? 'bx-book' : record.activityStatus === 'ambos' ? 'bx-briefcase-alt-2' : 'bx-building'}"></i>
                     <span>${actDesc}: ${displayDetail}</span>
                 </div>
             </div>
-            <div class="card-footer">
-                <span class="badge" style="text-transform: capitalize;">${record.activityStatus === 'ambos' ? 'Estudiante y Empleado' : record.activityStatus}</span>
-                ${currentUser && currentUser.role === 'admin' ? `
+        <div class="card-footer">
+            <span class="badge" style="text-transform: capitalize;">${record.activityStatus === 'ambos' ? 'Estudiante y Empleado' : record.activityStatus}</span>
+            ${currentUser && currentUser.role === 'admin' ? `
                 <button class="btn-delete" title="Eliminar Registro" onclick="deleteRecord('${record.uid}', event)">
                     <i class="bx bx-trash"></i>
                 </button>
                 ` : '<div></div>'}
-            </div>
-        `;
+        </div>
+    `;
         dataGrid.appendChild(card);
     });
 };
@@ -367,11 +368,63 @@ window.deleteRecord = async (uid, event) => {
         try {
             await db.collection("records").doc(uid).delete();
             showToast('Registro eliminado', '#ef4444');
+            if (editingRecordId === uid) resetFormCleanly(); // abort edit if deleted
         } catch (err) {
             console.error(err);
             showToast('Error al eliminar', '#ef4444');
         }
     }
+};
+
+window.loadRecordForEdit = (uid) => {
+    const r = recordsData.find(rec => rec.uid === uid);
+    if (!r) return;
+
+    modal.classList.remove('show');
+    editingRecordId = uid;
+
+    document.querySelector('#view-add h1').textContent = 'Editar Registro';
+
+    const idInput = document.getElementById('idNumber');
+    idInput.value = r.idNumber;
+    idInput.readOnly = true;
+    idInput.style.backgroundColor = '#f1f5f9';
+    idInput.style.color = '#94a3b8';
+
+    document.getElementById('fullName').value = r.fullName;
+    document.getElementById('activityStatus').value = r.activityStatus;
+
+    toggleActivityInput();
+
+    document.getElementById('activityDetail').value = r.activityDetail || '';
+    document.getElementById('activityDetail2').value = r.activityDetail2 || '';
+    document.getElementById('cargo').value = r.cargo || '';
+    document.getElementById('especialidad').value = r.especialidad || '';
+
+    // Load phones
+    const phoneList = r.phones && r.phones.length > 0 ? r.phones : [''];
+    document.getElementById('phoneInputsContainer').innerHTML = phoneList.map((p, i) => `
+        <div class="dynamic-input">
+            <input type="tel" name="phone[]" required value="${p}">
+                ${i === 0 ? `<button type="button" class="btn-icon add-input" onclick="addDynamicField('phoneInputsContainer', 'tel', 'phone[]')"><i class='bx bx-plus'></i></button>`
+            : `<button type="button" class="btn-icon remove-input" onclick="removeDynamicField(this)"><i class='bx bx-minus'></i></button>`}
+            </div>
+    `).join('');
+
+    // Load emails
+    const emailList = r.emails && r.emails.length > 0 ? r.emails : [''];
+    document.getElementById('emailInputsContainer').innerHTML = emailList.map((e, i) => `
+        <div class="dynamic-input">
+            <input type="email" name="email[]" required value="${e}">
+                ${i === 0 ? `<button type="button" class="btn-icon add-input" onclick="addDynamicField('emailInputsContainer', 'email', 'email[]')"><i class='bx bx-plus'></i></button>`
+            : `<button type="button" class="btn-icon remove-input" onclick="removeDynamicField(this)"><i class='bx bx-minus'></i></button>`}
+            </div>
+    `).join('');
+
+    currentBase64Photo = r.photoUrl || defaultImage;
+    photoPreview.src = currentBase64Photo;
+
+    switchView('view-add');
 };
 
 const modal = document.getElementById('detailModal');
@@ -387,15 +440,15 @@ window.openModal = (uid) => {
     let displayId = isRestricted ? '<span class="censored">xxx-xxx</span>' : r.idNumber;
     let displayDetail = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (r.activityDetail || 'No especificado');
     let displayDetail2 = isRestricted ? '<span class="censored">xxxxxxxx</span>' : r.activityDetail2;
-    let displayPhones = isRestricted ? '<p><span class="censored">xxxxxx</span></p>' : (r.phones && r.phones.length > 0 ? r.phones.map(p => `<p>${p}</p>`).join('') : '<p>No especificado</p>');
-    let displayEmails = isRestricted ? '<p><span class="censored">xxxxxx</span></p>' : (r.emails && r.emails.length > 0 ? r.emails.map(e => `<p>${e}</p>`).join('') : '<p>No especificado</p>');
+    let displayPhones = isRestricted ? '<p><span class="censored">xxxxxx</span></p>' : (r.phones && r.phones.length > 0 ? r.phones.map(p => `< p > ${p}</p > `).join('') : '<p>No especificado</p>');
+    let displayEmails = isRestricted ? '<p><span class="censored">xxxxxx</span></p>' : (r.emails && r.emails.length > 0 ? r.emails.map(e => `< p > ${e}</p > `).join('') : '<p>No especificado</p>');
 
     let displayCargo = isRestricted ? '<span class="censored">xxxxxx</span>' : (r.cargo ? r.cargo : '');
     let displayEspecialidad = isRestricted ? '<span class="censored">xxxxxx</span>' : (r.especialidad ? r.especialidad : '');
     let combinedRole = [displayCargo, displayEspecialidad].filter(Boolean).join(' | ') || 'No especificado';
 
     modalBody.innerHTML = `
-        <div class="modal-profile">
+        < div class="modal-profile" >
             <img src="${isRestricted ? defaultImage : r.photoUrl}" alt="Foto">
             <div class="modal-profile-info">
                 <h2>${r.fullName}</h2>
@@ -424,8 +477,15 @@ window.openModal = (uid) => {
                     ${r.activityStatus === 'ambos' && r.activityDetail2 ? `<p style="margin-top: 4px;">${displayDetail2}</p>` : ''}
                 </div>
             </div>
+            ${currentUser && currentUser.role === 'admin' ? `
+            <div style="margin-top: 24px; display: flex; gap: 12px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+                <button class="btn btn-primary" style="flex: 1;" onclick="loadRecordForEdit('${r.uid}')">
+                    <i class="bx bx-edit"></i> Editar Registro
+                </button>
+            </div>
+            ` : ''}
         </div>
-`;
+    `;
     modal.classList.add('show');
 };
 
@@ -453,8 +513,8 @@ window.addDynamicField = (containerId, type, name) => {
     const div = document.createElement('div');
     div.className = 'dynamic-input';
     div.innerHTML = `
-            <input type="${type}" name="${name}" required>
-        <button type="button" class="btn-icon remove-input" onclick="removeDynamicField(this)"><i class='bx bx-minus'></i></button>
+        < input type = "${type}" name = "${name}" required >
+            <button type="button" class="btn-icon remove-input" onclick="removeDynamicField(this)"><i class='bx bx-minus'></i></button>
     `;
     container.appendChild(div);
 };
@@ -564,19 +624,19 @@ const renderUsersGrid = () => {
         const div = document.createElement('div');
         div.className = 'user-card';
         div.innerHTML = `
-            <div class="user-card-info">
+        < div class="user-card-info" >
                 <span class="user-card-name">${u.name}</span>
                 <span class="user-card-email">${u.email}</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <span class="badge" style="background: ${roleBadge}; color: white; border: none;">${roleName}</span>
-                ${u.email !== 'admin@vegasgroup.com' ? `
+            </div >
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span class="badge" style="background: ${roleBadge}; color: white; border: none;">${roleName}</span>
+            ${u.email !== 'admin@vegasgroup.com' ? `
                 <button class="btn-delete" title="Revocar Acceso" onclick="deleteUser('${u.uid}')" style="background: transparent; border: none; font-size: 18px; padding: 4px; border-radius: 4px; cursor: pointer; color: var(--text-muted);">
                     <i class="bx bx-trash" style="color: #ef4444;"></i>
                 </button>
                 ` : '<div style="width: 26px;"></div>'}
-            </div>
-        `;
+        </div>
+    `;
         grid.appendChild(div);
     });
 };
