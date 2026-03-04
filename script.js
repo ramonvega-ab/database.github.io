@@ -329,29 +329,34 @@ const renderGrid = (filterText = '') => {
         const displayRoleText = displayRole.join(' | ') || 'N/A';
 
         const card = document.createElement('div');
-        card.className = 'data-card';
-        card.onclick = () => openModal(record.uid);
+        card.className = 'person-card';
         card.innerHTML = `
-        <div class="card-header">
-            ${record.photoUrl ? `<img src="${isRestricted ? defaultImage : record.photoUrl}" alt="Foto" class="card-avatar">` : `<div class="card-avatar"><i class='bx bx-user'></i></div>`}
-                <div class="card-info">
+            <div class="card-header" onclick="openModal('${record.uid}')">
+                <img src="${isRestricted ? defaultImage : record.photoUrl}" class="card-photo" alt="Foto">
+                <div class="card-title">
                     <h3>${record.fullName}</h3>
-                    <span>${displayRoleText}</span>
+                    <p style="text-transform: capitalize;">${displayRoleText}</p>
+                </div>
+            </div>
+            <div class="card-body" onclick="openModal('${record.uid}')">
+                <div class="card-detail">
+                    <i class="bx bx-id-card"></i>
+                    <span>ID: ${displayId}</span>
                 </div>
                 <div class="card-detail">
                     <i class="bx ${record.activityStatus === 'estudia' ? 'bx-book' : record.activityStatus === 'ambos' ? 'bx-briefcase-alt-2' : 'bx-building'}"></i>
                     <span>${actDesc}: ${displayDetail}</span>
                 </div>
             </div>
-        <div class="card-footer">
-            <span class="badge" style="text-transform: capitalize;">${record.activityStatus === 'ambos' ? 'Estudiante y Empleado' : record.activityStatus}</span>
-            ${currentUser && currentUser.role === 'admin' ? `
+            <div class="card-footer">
+                <span class="badge" style="text-transform: capitalize;">${record.activityStatus === 'ambos' ? 'Estudiante y Empleado' : record.activityStatus}</span>
+                ${currentUser && currentUser.role === 'admin' ? `
                 <button class="btn-delete" title="Eliminar Registro" onclick="deleteRecord('${record.uid}', event)">
                     <i class="bx bx-trash"></i>
                 </button>
                 ` : '<div></div>'}
-        </div>
-    `;
+            </div>
+        `;
         dataGrid.appendChild(card);
     });
 };
@@ -440,15 +445,15 @@ window.openModal = (uid) => {
     let displayId = isRestricted ? '<span class="censored">xxx-xxx</span>' : r.idNumber;
     let displayDetail = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (r.activityDetail || 'No especificado');
     let displayDetail2 = isRestricted ? '<span class="censored">xxxxxxxx</span>' : r.activityDetail2;
-    let displayPhones = isRestricted ? '<p><span class="censored">xxxxxx</span></p>' : (r.phones && r.phones.length > 0 ? r.phones.map(p => `< p > ${p}</p > `).join('') : '<p>No especificado</p>');
-    let displayEmails = isRestricted ? '<p><span class="censored">xxxxxx</span></p>' : (r.emails && r.emails.length > 0 ? r.emails.map(e => `< p > ${e}</p > `).join('') : '<p>No especificado</p>');
+    let displayPhones = isRestricted ? '<p><span class="censored">xxxxxx</span></p>' : (r.phones && r.phones.length > 0 ? r.phones.map(p => `<p>${p}</p>`).join('') : '<p>No especificado</p>');
+    let displayEmails = isRestricted ? '<p><span class="censored">xxxxxx</span></p>' : (r.emails && r.emails.length > 0 ? r.emails.map(e => `<p>${e}</p>`).join('') : '<p>No especificado</p>');
 
     let displayCargo = isRestricted ? '<span class="censored">xxxxxx</span>' : (r.cargo ? r.cargo : '');
     let displayEspecialidad = isRestricted ? '<span class="censored">xxxxxx</span>' : (r.especialidad ? r.especialidad : '');
     let combinedRole = [displayCargo, displayEspecialidad].filter(Boolean).join(' | ') || 'No especificado';
 
     modalBody.innerHTML = `
-        < div class="modal-profile" >
+        <div class="modal-profile">
             <img src="${isRestricted ? defaultImage : r.photoUrl}" alt="Foto">
             <div class="modal-profile-info">
                 <h2>${r.fullName}</h2>
