@@ -150,11 +150,17 @@ auth.onAuthStateChanged(async (user) => {
     }
 });
 
-window.handleLogin = async (e) => {
+document.getElementById('btnLogin').addEventListener('click', async (e) => {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const pass = document.getElementById('loginPassword').value;
     const err = document.getElementById('loginError');
+
+    if (!email || !pass) {
+        err.style.display = 'block';
+        err.textContent = 'Por favor, rellena ambos campos.';
+        return;
+    }
 
     try {
         await auth.signInWithEmailAndPassword(email, pass);
@@ -167,9 +173,7 @@ window.handleLogin = async (e) => {
         console.error("Auth error:", error);
         alert("Error de Firebase Auth (" + error.code + "): " + error.message);
     }
-};
-
-document.getElementById('loginForm').addEventListener('submit', window.handleLogin);
+});
 
 document.getElementById('btnLogout').addEventListener('click', () => {
     auth.signOut();
