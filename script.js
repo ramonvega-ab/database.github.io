@@ -1,4 +1,13 @@
 // Initialize Firebase using compat mode
+const firebaseConfig = {
+    apiKey: "AIzaSyDNMCPkYhHWxCwhNkPyVUuNmDK9kB8EQ-s",
+    authDomain: "vegas-group-db.firebaseapp.com",
+    projectId: "vegas-group-db",
+    storageBucket: "vegas-group-db.firebasestorage.app",
+    messagingSenderId: "182879461313",
+    appId: "1:182879461313:web:af8db49a80a2b23e469940"
+};
+
 const app = firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
