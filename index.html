@@ -300,11 +300,10 @@
             <div id="detailModal" class="modal">
                 <div class="modal-content">
                     <span class="close-modal">&times;</span>
-                    <div class="modal-header-actions"
-                        style="display: flex; justify-content: flex-end; padding-right: 32px; padding-top: 16px;">
-                        <button class="btn-icon" id="btnPrintRecord" title="Imprimir Perfil"
-                            style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; cursor: pointer; color: var(--text-main);">
-                            <i class='bx bx-printer' style="font-size: 20px;"></i> Imprimir
+                    <div class="modal-header-actions" style="position: absolute; top: 14px; right: 60px; z-index: 10;">
+                        <button id="btnPrintRecord" title="Imprimir Perfil"
+                            style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; color: var(--text-main); display: flex; align-items: center; gap: 6px; font-weight: 500; box-shadow: var(--shadow-sm);">
+                            <i class='bx bx-printer' style="font-size: 18px;"></i> Imprimir
                         </button>
                     </div>
                     <div id="modalBody">
