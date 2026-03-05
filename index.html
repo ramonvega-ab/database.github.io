@@ -300,6 +300,13 @@
             <div id="detailModal" class="modal">
                 <div class="modal-content">
                     <span class="close-modal">&times;</span>
+                    <div class="modal-header-actions"
+                        style="display: flex; justify-content: flex-end; padding-right: 32px; padding-top: 16px;">
+                        <button class="btn-icon" id="btnPrintRecord" title="Imprimir Perfil"
+                            style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; cursor: pointer; color: var(--text-main);">
+                            <i class='bx bx-printer' style="font-size: 20px;"></i> Imprimir
+                        </button>
+                    </div>
                     <div id="modalBody">
                         <!-- Details injected via JS -->
                     </div>
@@ -307,6 +314,11 @@
             </div>
 
         </main>
+    </div>
+
+    <!-- Printable Area (Hidden normally, shown on print) -->
+    <div id="print-area">
+        <!-- Content will be injected here before printing -->
     </div>
 
     <!-- Notification Toast -->

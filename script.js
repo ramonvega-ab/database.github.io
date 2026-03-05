@@ -534,13 +534,82 @@ window.openModal = (uid) => {
             </div>
             ${currentUser && currentUser.role === 'admin' ? `
             <div style="margin-top: 24px; display: flex; gap: 12px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
-                <button class="btn btn-primary" style="flex: 1;" onclick="loadRecordForEdit('${r.uid}')">
+                <button class="btn btn-primary" id="btnEditRecord" style="flex: 1;">
                     <i class="bx bx-edit"></i> Editar Registro
                 </button>
             </div>
             ` : ''}
         </div>
     `;
+
+    // Add Print Event Listener right after injecting the modal HTML
+    setTimeout(() => {
+        const btnPrint = document.getElementById('btnPrintRecord');
+        if (btnPrint) {
+            btnPrint.onclick = () => {
+                const printArea = document.getElementById('print-area');
+
+                printArea.innerHTML = `
+                    <div class="print-header">
+                        <span class="print-logo-v">V</span>
+                        <span class="print-logo-text">VEGAS GROUP</span>
+                    </div>
+                    <div class="print-profile">
+                        <img src="${isRestricted ? defaultImage : r.photoUrl}" alt="Foto" class="print-photo">
+                        <div style="display:flex; flex-direction:column; justify-content:center;">
+                            <h2 class="print-name">${r.fullName}</h2>
+                            <p class="print-role">${combinedRole} - ${r.activityStatus}</p>
+                            <p style="color:#64748b; font-size:14px; margin-top:10px;">ID: ${displayId}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="print-grid">
+                        <div class="print-item">
+                            <h4>CURP</h4>
+                            <p>${displayCurp}</p>
+                        </div>
+                        <div class="print-item">
+                            <h4>Lugar de Nacimiento</h4>
+                            <p>${displayLugarNac}</p>
+                        </div>
+                        <div class="print-item">
+                            <h4>Lugar de Residencia</h4>
+                            <p>${displayLugarRes}</p>
+                        </div>
+                        <div class="print-item">
+                            <h4>Dirección</h4>
+                            <p>${displayDireccion}</p>
+                        </div>
+                        <div class="print-item">
+                            <h4>Teléfonos</h4>
+                            ${isRestricted ? '<p>xxxxxx</p>' : (r.phones && r.phones.length > 0 ? r.phones.map(p => '<p>' + p + '</p>').join('') : '<p>No especificado</p>')}
+                        </div>
+                        <div class="print-item">
+                            <h4>Correos</h4>
+                            ${isRestricted ? '<p>xxxxxx</p>' : (r.emails && r.emails.length > 0 ? r.emails.map(e => '<p>' + e + '</p>').join('') : '<p>No especificado</p>')}
+                        </div>
+                        <div class="print-item">
+                            <h4>Estado Actividad</h4>
+                            <p style="text-transform: capitalize;">${r.activityStatus}</p>
+                        </div>
+                        <div class="print-item">
+                            <h4>${r.activityStatus === 'estudia' ? 'Institución Educativa' : r.activityStatus === 'ambos' ? 'Institución y Empresa' : 'Empresa'}</h4>
+                            <p>${displayDetail}</p>
+                            ${r.activityStatus === 'ambos' && r.activityDetail2 ? `<p style="margin-top: 4px;">${displayDetail2}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+                window.print();
+            };
+        }
+
+        // Add Edit logic back if the user is an admin
+        const btnEdit = document.getElementById('btnEditRecord');
+        if (btnEdit) {
+            btnEdit.onclick = () => loadRecordForEdit(r.uid);
+        }
+    }, 50);
+
     modal.classList.add('show');
 };
 
