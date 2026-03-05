@@ -515,6 +515,14 @@ window.openModal = (uid) => {
                     <p>${displayDireccion}</p>
                 </div>
                 <div class="detail-item">
+                    <h4>Cargo</h4>
+                    <p>${displayCargo}</p>
+                </div>
+                <div class="detail-item">
+                    <h4>Especialidad</h4>
+                    <p>${displayEspecialidad}</p>
+                </div>
+                <div class="detail-item">
                     <h4>Teléfonos</h4>
                     ${displayPhones}
                 </div>
@@ -554,10 +562,10 @@ window.openModal = (uid) => {
                         <span class="print-logo-v">V</span>
                         <span class="print-logo-text">VEGAS GROUP</span>
                     </div>
-                    <div class="print-profile">
+                    <div class="print-profile" style="margin-top: 20px;">
                         <img src="${isRestricted ? defaultImage : r.photoUrl}" alt="Foto" class="print-photo">
                         <div style="display:flex; flex-direction:column; justify-content:center;">
-                            <h2 class="print-name">${r.fullName}</h2>
+                            <h2 class="print-name" style="margin-top: 10px;">${r.fullName}</h2>
                             <p class="print-role">${combinedRole} - ${r.activityStatus}</p>
                             <p style="color:#64748b; font-size:14px; margin-top:10px;">ID: ${displayId}</p>
                         </div>
@@ -581,12 +589,20 @@ window.openModal = (uid) => {
                             <p>${displayDireccion}</p>
                         </div>
                         <div class="print-item">
+                            <h4>Cargo</h4>
+                            <p>${displayCargo}</p>
+                        </div>
+                        <div class="print-item">
+                            <h4>Especialidad</h4>
+                            <p>${displayEspecialidad}</p>
+                        </div>
+                        <div class="print-item">
                             <h4>Teléfonos</h4>
-                            ${isRestricted ? '<p>xxxxxx</p>' : (r.phones && r.phones.length > 0 ? r.phones.map(p => '<p>' + p + '</p>').join('') : '<p>No especificado</p>')}
+                            ${displayPhones}
                         </div>
                         <div class="print-item">
                             <h4>Correos</h4>
-                            ${isRestricted ? '<p>xxxxxx</p>' : (r.emails && r.emails.length > 0 ? r.emails.map(e => '<p>' + e + '</p>').join('') : '<p>No especificado</p>')}
+                            ${displayEmails}
                         </div>
                         <div class="print-item">
                             <h4>Estado Actividad</h4>
