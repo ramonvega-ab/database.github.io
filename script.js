@@ -225,6 +225,10 @@ form.addEventListener('submit', async (e) => {
         uid: isEdit ? editingRecordId : generateId(),
         idNumber: document.getElementById('idNumber').value,
         fullName: document.getElementById('fullName').value,
+        curp: document.getElementById('curp').value,
+        lugarNacimiento: document.getElementById('lugarNacimiento').value,
+        lugarResidencia: document.getElementById('lugarResidencia').value,
+        direccion: document.getElementById('direccion').value,
         activityStatus: document.getElementById('activityStatus').value,
         activityDetail: document.getElementById('activityDetail').value,
         activityDetail2: document.getElementById('activityDetail2').value,
@@ -288,6 +292,7 @@ const renderGrid = (filterText = '') => {
         const text = filterText.toLowerCase();
         return r.fullName.toLowerCase().includes(text) ||
             r.idNumber.toLowerCase().includes(text) ||
+            (r.curp && r.curp.toLowerCase().includes(text)) ||
             (r.activityStatus && r.activityStatus.toLowerCase().includes(text)) ||
             (r.activityDetail && r.activityDetail.toLowerCase().includes(text)) ||
             (r.activityDetail2 && r.activityDetail2.toLowerCase().includes(text));
@@ -397,6 +402,10 @@ window.loadRecordForEdit = (uid) => {
     idInput.style.color = '#94a3b8';
 
     document.getElementById('fullName').value = r.fullName;
+    document.getElementById('curp').value = r.curp || '';
+    document.getElementById('lugarNacimiento').value = r.lugarNacimiento || '';
+    document.getElementById('lugarResidencia').value = r.lugarResidencia || '';
+    document.getElementById('direccion').value = r.direccion || '';
     document.getElementById('activityStatus').value = r.activityStatus;
 
     toggleActivityInput();
@@ -443,6 +452,10 @@ window.openModal = (uid) => {
 
     // Censor Logic
     let displayId = isRestricted ? '<span class="censored">xxx-xxx</span>' : r.idNumber;
+    let displayCurp = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (r.curp || 'No especificado');
+    let displayLugarNac = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (r.lugarNacimiento || 'No especificado');
+    let displayLugarRes = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (r.lugarResidencia || 'No especificado');
+    let displayDireccion = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (r.direccion || 'No especificado');
     let displayDetail = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (r.activityDetail || 'No especificado');
     let displayDetail2 = isRestricted ? '<span class="censored">xxxxxxxx</span>' : r.activityDetail2;
     let displayPhones = isRestricted ? '<p><span class="censored">xxxxxx</span></p>' : (r.phones && r.phones.length > 0 ? r.phones.map(p => `<p>${p}</p>`).join('') : '<p>No especificado</p>');
@@ -464,6 +477,22 @@ window.openModal = (uid) => {
         </div>
         <div class="modal-body-content">
             <div class="detail-grid">
+                <div class="detail-item">
+                    <h4>CURP</h4>
+                    <p>${displayCurp}</p>
+                </div>
+                <div class="detail-item">
+                    <h4>Lugar Nacimiento</h4>
+                    <p>${displayLugarNac}</p>
+                </div>
+                <div class="detail-item">
+                    <h4>Lugar Residencia</h4>
+                    <p>${displayLugarRes}</p>
+                </div>
+                <div class="detail-item">
+                    <h4>Dirección</h4>
+                    <p>${displayDireccion}</p>
+                </div>
                 <div class="detail-item">
                     <h4>Teléfonos</h4>
                     ${displayPhones}
