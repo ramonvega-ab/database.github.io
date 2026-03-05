@@ -328,6 +328,11 @@ const renderGrid = (filterText = '') => {
         let displayId = isRestricted ? '<span class="censored">xxx-xxx</span>' : record.idNumber;
         let displayDetail = isRestricted ? '<span class="censored">xxxxxxxx</span>' : detailString;
 
+        let displayCurpCard = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (record.curp || 'N/A');
+        let displayLugarNacCard = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (record.lugarNacimiento || 'N/A');
+        let displayLugarResCard = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (record.lugarResidencia || 'N/A');
+        let displayDireccionCard = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (record.direccion || 'N/A');
+
         let displayRole = [];
         if (record.cargo) displayRole.push(record.cargo);
         if (record.especialidad) displayRole.push(record.especialidad);
@@ -347,6 +352,22 @@ const renderGrid = (filterText = '') => {
                 <div class="card-detail">
                     <i class="bx bx-id-card"></i>
                     <span>ID: ${displayId}</span>
+                </div>
+                <div class="card-detail">
+                    <i class="bx bx-barcode"></i>
+                    <span>CURP: ${displayCurpCard}</span>
+                </div>
+                <div class="card-detail">
+                    <i class="bx bx-map"></i>
+                    <span>Nacimiento: ${displayLugarNacCard}</span>
+                </div>
+                <div class="card-detail">
+                    <i class="bx bx-home-circle"></i>
+                    <span>Residencia: ${displayLugarResCard}</span>
+                </div>
+                <div class="card-detail">
+                    <i class="bx bx-current-location"></i>
+                    <span>Dirección: ${displayDireccionCard}</span>
                 </div>
                 <div class="card-detail">
                     <i class="bx ${record.activityStatus === 'estudia' ? 'bx-book' : record.activityStatus === 'ambos' ? 'bx-briefcase-alt-2' : 'bx-building'}"></i>
