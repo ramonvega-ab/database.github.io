@@ -764,10 +764,10 @@ const renderUsersGrid = () => {
         const div = document.createElement('div');
         div.className = 'user-card';
         div.innerHTML = `
-        < div class="user-card-info" >
+        <div class="user-card-info">
                 <span class="user-card-name">${u.name}</span>
                 <span class="user-card-email">${u.email}</span>
-            </div >
+            </div>
         <div style="display: flex; align-items: center; gap: 12px;">
             <span class="badge" style="background: ${roleBadge}; color: white; border: none;">${roleName}</span>
             ${u.email !== 'admin@vegasgroup.com' ? `
