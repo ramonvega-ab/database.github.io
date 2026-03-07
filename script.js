@@ -269,6 +269,21 @@ const resetFormCleanly = () => {
     photoPreview.src = defaultImage;
     editingRecordId = null;
 
+    // Restaurar el estado de los campos "Desconocido"
+    document.querySelectorAll('.input-with-button input').forEach(input => {
+        input.readOnly = false;
+        input.style.backgroundColor = '';
+        input.style.color = '';
+        delete input.dataset.prevValue;
+        const btn = input.nextElementSibling;
+        if (btn && btn.classList.contains('btn-unknown')) {
+            btn.style.backgroundColor = '';
+            btn.style.color = '';
+            btn.innerHTML = "<i class='bx bx-question-mark'></i>";
+            btn.title = "Marcar como Desconocido";
+        }
+    });
+
     const idInput = document.getElementById('idNumber');
     idInput.readOnly = false;
     idInput.style.backgroundColor = '';
@@ -458,6 +473,22 @@ window.loadRecordForEdit = (uid) => {
 
     currentBase64Photo = r.photoUrl || defaultImage;
     photoPreview.src = currentBase64Photo;
+
+    // Restaurar el estado visual de los campos que ya son "Desconocido"
+    document.querySelectorAll('.input-with-button input').forEach(input => {
+        const btn = input.nextElementSibling;
+        if (input.value === 'Desconocido' && input.id !== 'idNumber') {
+            input.readOnly = true;
+            input.style.backgroundColor = '#f1f5f9';
+            input.style.color = '#94a3b8';
+            if (btn && btn.classList.contains('btn-unknown')) {
+                btn.style.backgroundColor = '#e2e8f0';
+                btn.style.color = '#334155';
+                btn.innerHTML = "<i class='bx bx-undo'></i>";
+                btn.title = "Deshacer desconocido";
+            }
+        }
+    });
 
     switchView('view-add');
 };
@@ -666,8 +697,34 @@ window.removeDynamicField = (btn) => {
 
 window.setUnknown = (inputId) => {
     const input = document.getElementById(inputId);
-    if (input) {
+    if (!input) return;
+    const btn = input.nextElementSibling;
+
+    if (input.readOnly && input.value === 'Desconocido') {
+        // Deshacer el estado "Desconocido"
+        input.value = input.dataset.prevValue || '';
+        input.readOnly = false;
+        input.style.backgroundColor = '';
+        input.style.color = '';
+        if (btn) {
+            btn.style.backgroundColor = '';
+            btn.style.color = '';
+            btn.innerHTML = "<i class='bx bx-question-mark'></i>";
+            btn.title = "Marcar como Desconocido";
+        }
+    } else {
+        // Establecer como "Desconocido"
+        input.dataset.prevValue = input.value !== 'Desconocido' ? input.value : '';
         input.value = 'Desconocido';
+        input.readOnly = true;
+        input.style.backgroundColor = '#f1f5f9';
+        input.style.color = '#94a3b8';
+        if (btn) {
+            btn.style.backgroundColor = '#e2e8f0';
+            btn.style.color = '#334155';
+            btn.innerHTML = "<i class='bx bx-undo'></i>";
+            btn.title = "Deshacer desconocido";
+        }
     }
 };
 
