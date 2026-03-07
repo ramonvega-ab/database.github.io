@@ -664,6 +664,13 @@ window.removeDynamicField = (btn) => {
     fieldRow.remove();
 };
 
+window.setUnknown = (inputId) => {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.value = 'Desconocido';
+    }
+};
+
 // Activity Input Toggle
 window.toggleActivityInput = () => {
     const status = document.getElementById('activityStatus').value;

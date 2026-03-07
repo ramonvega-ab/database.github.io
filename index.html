@@ -147,33 +147,59 @@
                             <div class="input-row">
                                 <div class="input-group">
                                     <label for="idNumber">ID</label>
-                                    <input type="text" id="idNumber" required>
+                                    <div class="input-with-button">
+                                        <input type="text" id="idNumber" required>
+                                        <button type="button" class="btn-unknown" onclick="setUnknown('idNumber')"
+                                            title="Marcar como Desconocido"><i class='bx bx-question-mark'></i></button>
+                                    </div>
                                 </div>
                                 <div class="input-group">
                                     <label for="fullName">Nombre Completo</label>
-                                    <input type="text" id="fullName" required>
+                                    <div class="input-with-button">
+                                        <input type="text" id="fullName" required>
+                                        <button type="button" class="btn-unknown" onclick="setUnknown('fullName')"
+                                            title="Marcar como Desconocido"><i class='bx bx-question-mark'></i></button>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="input-row">
                                 <div class="input-group">
                                     <label for="curp">CURP</label>
-                                    <input type="text" id="curp" required>
+                                    <div class="input-with-button">
+                                        <input type="text" id="curp" required>
+                                        <button type="button" class="btn-unknown" onclick="setUnknown('curp')"
+                                            title="Marcar como Desconocido"><i class='bx bx-question-mark'></i></button>
+                                    </div>
                                 </div>
                                 <div class="input-group">
                                     <label for="lugarNacimiento">Lugar de Nacimiento</label>
-                                    <input type="text" id="lugarNacimiento" required>
+                                    <div class="input-with-button">
+                                        <input type="text" id="lugarNacimiento" required>
+                                        <button type="button" class="btn-unknown"
+                                            onclick="setUnknown('lugarNacimiento')" title="Marcar como Desconocido"><i
+                                                class='bx bx-question-mark'></i></button>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="input-row">
                                 <div class="input-group">
                                     <label for="lugarResidencia">Lugar de Residencia</label>
-                                    <input type="text" id="lugarResidencia" required>
+                                    <div class="input-with-button">
+                                        <input type="text" id="lugarResidencia" required>
+                                        <button type="button" class="btn-unknown"
+                                            onclick="setUnknown('lugarResidencia')" title="Marcar como Desconocido"><i
+                                                class='bx bx-question-mark'></i></button>
+                                    </div>
                                 </div>
                                 <div class="input-group">
                                     <label for="direccion">Dirección</label>
-                                    <input type="text" id="direccion" required>
+                                    <div class="input-with-button">
+                                        <input type="text" id="direccion" required>
+                                        <button type="button" class="btn-unknown" onclick="setUnknown('direccion')"
+                                            title="Marcar como Desconocido"><i class='bx bx-question-mark'></i></button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -192,12 +218,24 @@
                                         style="display: none; margin-bottom: 12px;">
                                         <label id="activityDetailLabel" for="activityDetail">Institución /
                                             Empresa</label>
-                                        <input type="text" id="activityDetail">
+                                        <div class="input-with-button">
+                                            <input type="text" id="activityDetail">
+                                            <button type="button" class="btn-unknown"
+                                                onclick="setUnknown('activityDetail')"
+                                                title="Marcar como Desconocido"><i
+                                                    class='bx bx-question-mark'></i></button>
+                                        </div>
                                     </div>
                                     <div class="input-group" id="activityDetailGroup2"
                                         style="display: none; margin-bottom: 0;">
                                         <label id="activityDetailLabel2" for="activityDetail2">Nombre de Empresa</label>
-                                        <input type="text" id="activityDetail2">
+                                        <div class="input-with-button">
+                                            <input type="text" id="activityDetail2">
+                                            <button type="button" class="btn-unknown"
+                                                onclick="setUnknown('activityDetail2')"
+                                                title="Marcar como Desconocido"><i
+                                                    class='bx bx-question-mark'></i></button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -205,11 +243,19 @@
                             <div class="input-row" id="roleRow" style="display: none;">
                                 <div class="input-group" id="cargoGroup" style="display: none;">
                                     <label for="cargo">Cargo en la Empresa</label>
-                                    <input type="text" id="cargo" placeholder="Ej: Gerente de Ventas">
+                                    <div class="input-with-button">
+                                        <input type="text" id="cargo" placeholder="Ej: Gerente de Ventas">
+                                        <button type="button" class="btn-unknown" onclick="setUnknown('cargo')"
+                                            title="Marcar como Desconocido"><i class='bx bx-question-mark'></i></button>
+                                    </div>
                                 </div>
                                 <div class="input-group" id="especialidadGroup" style="display: none;">
                                     <label for="especialidad">Especialidad de Estudio</label>
-                                    <input type="text" id="especialidad" placeholder="Ej: Ingeniería de Software">
+                                    <div class="input-with-button">
+                                        <input type="text" id="especialidad" placeholder="Ej: Ingeniería de Software">
+                                        <button type="button" class="btn-unknown" onclick="setUnknown('especialidad')"
+                                            title="Marcar como Desconocido"><i class='bx bx-question-mark'></i></button>
+                                    </div>
                                 </div>
                             </div>
 
