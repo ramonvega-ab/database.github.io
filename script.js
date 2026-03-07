@@ -761,6 +761,14 @@ const renderUsersGrid = () => {
         let roleBadge = u.role === 'admin' ? '#f59e0b' : u.role === 'restricted' ? '#ef4444' : '#3b82f6';
         let roleName = u.role === 'admin' ? 'Admin' : u.role === 'restricted' ? 'Restringido' : 'Lector';
 
+        let roleElement = u.email === 'admin@vegasgroup.com' ?
+            `<span class="badge" style="background: ${roleBadge}; color: white; border: none;">${roleName}</span>` :
+            `<select onchange="updateUserRole('${u.uid}', this.value)" class="badge" style="padding: 4px 8px; border-radius: 6px; border: none; background: ${roleBadge}; color: white; font-size: 12px; font-weight: 600; cursor: pointer; outline: none; font-family: inherit;">
+                <option value="viewer" style="background: var(--bg-surface); color: var(--text-main);" ${u.role === 'viewer' ? 'selected' : ''}>Lector</option>
+                <option value="restricted" style="background: var(--bg-surface); color: var(--text-main);" ${u.role === 'restricted' ? 'selected' : ''}>Restringido</option>
+                <option value="admin" style="background: var(--bg-surface); color: var(--text-main);" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+            </select>`;
+
         const div = document.createElement('div');
         div.className = 'user-card';
         div.innerHTML = `
@@ -769,7 +777,7 @@ const renderUsersGrid = () => {
                 <span class="user-card-email">${u.email}</span>
             </div>
         <div style="display: flex; align-items: center; gap: 12px;">
-            <span class="badge" style="background: ${roleBadge}; color: white; border: none;">${roleName}</span>
+            ${roleElement}
             ${u.email !== 'admin@vegasgroup.com' ? `
                 <button class="btn-delete" title="Revocar Acceso" onclick="deleteUser('${u.uid}')" style="background: transparent; border: none; font-size: 18px; padding: 4px; border-radius: 4px; cursor: pointer; color: var(--text-muted);">
                     <i class="bx bx-trash" style="color: #ef4444;"></i>
@@ -813,6 +821,17 @@ document.getElementById('addUserForm')?.addEventListener('submit', async (e) => 
         alert('Error al crear usuario: ' + err.message);
     }
 });
+
+window.updateUserRole = async (uid, newRole) => {
+    if (!currentUser || currentUser.role !== 'admin') return;
+    try {
+        await db.collection("roles").doc(uid).update({ role: newRole });
+        showToast('Permiso actualizado exitosamente', '#10b981');
+    } catch (err) {
+        console.error("Error al actualizar permiso:", err);
+        showToast('Error al actualizar permiso', '#ef4444');
+    }
+};
 
 window.deleteUser = async (uid) => {
     if (!currentUser || currentUser.role !== 'admin') return;
