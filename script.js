@@ -226,6 +226,7 @@ form.addEventListener('submit', async (e) => {
         idNumber: document.getElementById('idNumber').value,
         fullName: document.getElementById('fullName').value,
         curp: document.getElementById('curp').value,
+        fechaNacimiento: document.getElementById('fechaNacimiento').value,
         lugarNacimiento: document.getElementById('lugarNacimiento').value,
         lugarResidencia: document.getElementById('lugarResidencia').value,
         direccion: document.getElementById('direccion').value,
@@ -256,11 +257,13 @@ const resetFormCleanly = () => {
     document.getElementById('phoneInputsContainer').innerHTML = `
         <div class="dynamic-input">
             <input type="tel" name="phone[]" required>
+            <button type="button" class="btn-unknown" onclick="setUnknown(this)" title="Marcar como Desconocido"><i class='bx bx-question-mark'></i></button>
             <button type="button" class="btn-icon add-input" onclick="addDynamicField('phoneInputsContainer', 'tel', 'phone[]')"><i class='bx bx-plus'></i></button>
         </div>`;
     document.getElementById('emailInputsContainer').innerHTML = `
         <div class="dynamic-input">
             <input type="email" name="email[]" required>
+            <button type="button" class="btn-unknown" onclick="setUnknown(this)" title="Marcar como Desconocido"><i class='bx bx-question-mark'></i></button>
             <button type="button" class="btn-icon add-input" onclick="addDynamicField('emailInputsContainer', 'email', 'email[]')"><i class='bx bx-plus'></i></button>
         </div>`;
 
@@ -270,7 +273,10 @@ const resetFormCleanly = () => {
     editingRecordId = null;
 
     // Restaurar el estado de los campos "Desconocido"
-    document.querySelectorAll('.input-with-button input').forEach(input => {
+    document.querySelectorAll('.input-with-button input, .dynamic-input input').forEach(input => {
+        if (input.dataset.originalType) {
+            input.type = input.dataset.originalType;
+        }
         input.readOnly = false;
         input.style.backgroundColor = '';
         input.style.color = '';
@@ -344,7 +350,7 @@ const renderGrid = (filterText = '') => {
         let displayDetail = isRestricted ? '<span class="censored">xxxxxxxx</span>' : detailString;
 
         let displayCurpCard = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (record.curp || 'N/A');
-        let displayLugarNacCard = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (record.lugarNacimiento || 'N/A');
+        let displayLugarNacCard = isRestricted ? '<span class="censored">xxxxxxxx</span>' : ((record.fechaNacimiento ? record.fechaNacimiento + ' - ' : '') + (record.lugarNacimiento || 'N/A'));
         let displayLugarResCard = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (record.lugarResidencia || 'N/A');
         let displayDireccionCard = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (record.direccion || 'N/A');
 
@@ -439,6 +445,7 @@ window.loadRecordForEdit = (uid) => {
 
     document.getElementById('fullName').value = r.fullName;
     document.getElementById('curp').value = r.curp || '';
+    document.getElementById('fechaNacimiento').value = r.fechaNacimiento || '';
     document.getElementById('lugarNacimiento').value = r.lugarNacimiento || '';
     document.getElementById('lugarResidencia').value = r.lugarResidencia || '';
     document.getElementById('direccion').value = r.direccion || '';
@@ -456,6 +463,7 @@ window.loadRecordForEdit = (uid) => {
     document.getElementById('phoneInputsContainer').innerHTML = phoneList.map((p, i) => `
         <div class="dynamic-input">
             <input type="tel" name="phone[]" required value="${p}">
+            <button type="button" class="btn-unknown" onclick="setUnknown(this)" title="Marcar como Desconocido"><i class='bx bx-question-mark'></i></button>
                 ${i === 0 ? `<button type="button" class="btn-icon add-input" onclick="addDynamicField('phoneInputsContainer', 'tel', 'phone[]')"><i class='bx bx-plus'></i></button>`
             : `<button type="button" class="btn-icon remove-input" onclick="removeDynamicField(this)"><i class='bx bx-minus'></i></button>`}
             </div>
@@ -466,6 +474,7 @@ window.loadRecordForEdit = (uid) => {
     document.getElementById('emailInputsContainer').innerHTML = emailList.map((e, i) => `
         <div class="dynamic-input">
             <input type="email" name="email[]" required value="${e}">
+            <button type="button" class="btn-unknown" onclick="setUnknown(this)" title="Marcar como Desconocido"><i class='bx bx-question-mark'></i></button>
                 ${i === 0 ? `<button type="button" class="btn-icon add-input" onclick="addDynamicField('emailInputsContainer', 'email', 'email[]')"><i class='bx bx-plus'></i></button>`
             : `<button type="button" class="btn-icon remove-input" onclick="removeDynamicField(this)"><i class='bx bx-minus'></i></button>`}
             </div>
@@ -475,9 +484,13 @@ window.loadRecordForEdit = (uid) => {
     photoPreview.src = currentBase64Photo;
 
     // Restaurar el estado visual de los campos que ya son "Desconocido"
-    document.querySelectorAll('.input-with-button input').forEach(input => {
+    document.querySelectorAll('.input-with-button input, .dynamic-input input').forEach(input => {
         const btn = input.nextElementSibling;
         if (input.value === 'Desconocido' && input.id !== 'idNumber') {
+            if (input.type === 'email' || input.type === 'date' || input.type === 'tel') {
+                input.dataset.originalType = input.type;
+                input.type = 'text';
+            }
             input.readOnly = true;
             input.style.backgroundColor = '#f1f5f9';
             input.style.color = '#94a3b8';
@@ -534,8 +547,8 @@ window.openModal = (uid) => {
                     <p>${displayCurp}</p>
                 </div>
                 <div class="detail-item">
-                    <h4>Lugar Nacimiento</h4>
-                    <p>${displayLugarNac}</p>
+                    <h4>Nacimiento</h4>
+                    <p>${r.fechaNacimiento ? r.fechaNacimiento + '<br>' : ''}${displayLugarNac}</p>
                 </div>
                 <div class="detail-item">
                     <h4>Lugar Residencia</h4>
@@ -608,8 +621,8 @@ window.openModal = (uid) => {
                             <p>${displayCurp}</p>
                         </div>
                         <div class="print-item">
-                            <h4>Lugar de Nacimiento</h4>
-                            <p>${displayLugarNac}</p>
+                            <h4>Nacimiento</h4>
+                            <p>${r.fechaNacimiento ? r.fechaNacimiento + ' - ' : ''}${displayLugarNac}</p>
                         </div>
                         <div class="print-item">
                             <h4>Lugar de Residencia</h4>
@@ -684,8 +697,9 @@ window.addDynamicField = (containerId, type, name) => {
     const div = document.createElement('div');
     div.className = 'dynamic-input';
     div.innerHTML = `
-        < input type = "${type}" name = "${name}" required >
-            <button type="button" class="btn-icon remove-input" onclick="removeDynamicField(this)"><i class='bx bx-minus'></i></button>
+        <input type="${type}" name="${name}" required>
+        <button type="button" class="btn-unknown" onclick="setUnknown(this)" title="Marcar como Desconocido"><i class='bx bx-question-mark'></i></button>
+        <button type="button" class="btn-icon remove-input" onclick="removeDynamicField(this)"><i class='bx bx-minus'></i></button>
     `;
     container.appendChild(div);
 };
@@ -695,14 +709,22 @@ window.removeDynamicField = (btn) => {
     fieldRow.remove();
 };
 
-window.setUnknown = (inputId) => {
-    const input = document.getElementById(inputId);
+window.setUnknown = (inputIdOrElement) => {
+    let input;
+    if (typeof inputIdOrElement === 'string') {
+        input = document.getElementById(inputIdOrElement);
+    } else {
+        input = inputIdOrElement.previousElementSibling;
+    }
     if (!input) return;
     const btn = input.nextElementSibling;
 
     if (input.readOnly && input.value === 'Desconocido') {
         // Deshacer el estado "Desconocido"
         input.value = input.dataset.prevValue || '';
+        if (input.dataset.originalType) {
+            input.type = input.dataset.originalType;
+        }
         input.readOnly = false;
         input.style.backgroundColor = '';
         input.style.color = '';
@@ -715,6 +737,10 @@ window.setUnknown = (inputId) => {
     } else {
         // Establecer como "Desconocido"
         input.dataset.prevValue = input.value !== 'Desconocido' ? input.value : '';
+        if (input.type === 'email' || input.type === 'date' || input.type === 'tel') {
+            input.dataset.originalType = input.type;
+            input.type = 'text';
+        }
         input.value = 'Desconocido';
         input.readOnly = true;
         input.style.backgroundColor = '#f1f5f9';
