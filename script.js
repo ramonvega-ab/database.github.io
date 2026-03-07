@@ -340,7 +340,7 @@ const renderGrid = (filterText = '') => {
         let detailString = `${record.activityDetail || 'N/A'}${record.activityDetail2 ? ' & ' + record.activityDetail2 : ''} `;
 
         // Role-based Censor Mapping
-        let displayId = isRestricted ? '<span class="censored">xxx-xxx</span>' : record.idNumber;
+        let displayId = record.idNumber; // El ID ya no se censura
         let displayDetail = isRestricted ? '<span class="censored">xxxxxxxx</span>' : detailString;
 
         let displayCurpCard = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (record.curp || 'N/A');
@@ -390,7 +390,7 @@ const renderGrid = (filterText = '') => {
                 </div>
             </div>
             <div class="card-footer">
-                <span class="badge" style="text-transform: capitalize;">${record.activityStatus === 'ambos' ? 'Estudiante y Empleado' : record.activityStatus}</span>
+                <span class="badge" style="text-transform: capitalize;">${isRestricted ? '<span class="censored">xxxxxx</span>' : (record.activityStatus === 'ambos' ? 'Estudiante y Empleado' : record.activityStatus)}</span>
                 ${currentUser && currentUser.role === 'admin' ? `
                 <button class="btn-delete" title="Eliminar Registro" onclick="deleteRecord('${record.uid}', event)">
                     <i class="bx bx-trash"></i>
@@ -503,7 +503,7 @@ window.openModal = (uid) => {
     let isRestricted = currentUser && currentUser.role === 'restricted';
 
     // Censor Logic
-    let displayId = isRestricted ? '<span class="censored">xxx-xxx</span>' : r.idNumber;
+    let displayId = r.idNumber; // El ID ya no se censura
     let displayCurp = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (r.curp || 'No especificado');
     let displayLugarNac = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (r.lugarNacimiento || 'No especificado');
     let displayLugarRes = isRestricted ? '<span class="censored">xxxxxxxx</span>' : (r.lugarResidencia || 'No especificado');
@@ -522,7 +522,7 @@ window.openModal = (uid) => {
             <img src="${isRestricted ? defaultImage : r.photoUrl}" alt="Foto">
             <div class="modal-profile-info">
                 <h2>${r.fullName}</h2>
-                <p style="color: #64748b; font-size: 14px; text-transform: capitalize;">${combinedRole} - ${r.activityStatus}</p>
+                <p style="color: #64748b; font-size: 14px; text-transform: capitalize;">${combinedRole} - ${isRestricted ? '<span class="censored">xxxxxx</span>' : r.activityStatus}</p>
                 <div class="badge" style="background: #e2e8f0; color: #334155; margin-right: 8px;">ID: ${displayId}</div>
                 <div class="badge">Añadido: ${r.dateAdded}</div>
             </div>
@@ -563,7 +563,7 @@ window.openModal = (uid) => {
                 </div>
                 <div class="detail-item">
                     <h4>Estado Actividad</h4>
-                    <p style="text-transform: capitalize;">${r.activityStatus}</p>
+                    <p style="text-transform: capitalize;">${isRestricted ? '<span class="censored">xxxxxx</span>' : r.activityStatus}</p>
                 </div>
                 <div class="detail-item">
                     <h4>${r.activityStatus === 'estudia' ? 'Institución Educativa' : r.activityStatus === 'ambos' ? 'Institución y Empresa' : 'Empresa'}</h4>
@@ -597,7 +597,7 @@ window.openModal = (uid) => {
                         <img src="${isRestricted ? defaultImage : r.photoUrl}" alt="Foto" class="print-photo">
                         <div style="display:flex; flex-direction:column; justify-content:center;">
                             <h2 class="print-name" style="margin-top: 10px;">${r.fullName}</h2>
-                            <p class="print-role">${combinedRole} - ${r.activityStatus}</p>
+                            <p class="print-role">${combinedRole} - ${isRestricted ? '<span class="censored">xxxxxx</span>' : r.activityStatus}</p>
                             <p style="color:#64748b; font-size:14px; margin-top:10px;">ID: ${displayId}</p>
                         </div>
                     </div>
@@ -637,7 +637,7 @@ window.openModal = (uid) => {
                         </div>
                         <div class="print-item">
                             <h4>Estado Actividad</h4>
-                            <p style="text-transform: capitalize;">${r.activityStatus}</p>
+                            <p style="text-transform: capitalize;">${isRestricted ? '<span class="censored">xxxxxx</span>' : r.activityStatus}</p>
                         </div>
                         <div class="print-item">
                             <h4>${r.activityStatus === 'estudia' ? 'Institución Educativa' : r.activityStatus === 'ambos' ? 'Institución y Empresa' : 'Empresa'}</h4>
