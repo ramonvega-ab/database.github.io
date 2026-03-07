@@ -311,8 +311,8 @@ const renderGrid = (filterText = '') => {
 
     const filtered = records.filter(r => {
         const text = filterText.toLowerCase();
-        return r.fullName.toLowerCase().includes(text) ||
-            r.idNumber.toLowerCase().includes(text) ||
+        return (r.fullName || '').toLowerCase().includes(text) ||
+            (r.idNumber || '').toString().toLowerCase().includes(text) ||
             (r.curp && r.curp.toLowerCase().includes(text)) ||
             (r.activityStatus && r.activityStatus.toLowerCase().includes(text)) ||
             (r.activityDetail && r.activityDetail.toLowerCase().includes(text)) ||
