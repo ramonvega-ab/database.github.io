@@ -196,7 +196,7 @@ a {
 }
 
 .censored {
-    background-color: #1e293b;
+    background-color: #1e293b !important;
     /* Color negro/gris muy oscuro */
     color: transparent !important;
     user-select: none;
@@ -207,6 +207,8 @@ a {
     /* Altura similar al texto base */
     line-height: 1;
     vertical-align: middle;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
 }
 
 .censored::selection {
